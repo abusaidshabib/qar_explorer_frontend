@@ -5,7 +5,7 @@ const userApi = hajjApi.injectEndpoints({
   endpoints: (builder) => ({
     getAllUser: builder.query({
       query: () => {
-        return "/users";
+        return "users/";
       },
       async onQueryStarted(args, { dispatch, queryFulfilled }) {
         try {
@@ -21,7 +21,7 @@ const userApi = hajjApi.injectEndpoints({
       query: (data) => {
         return {
           method: "POST",
-          url: "/register",
+          url: "register/",
           body: data,
         };
       },
@@ -31,7 +31,7 @@ const userApi = hajjApi.injectEndpoints({
       query: (data) => {
         return {
           method: "DELETE",
-          url: `/del-users/${data}`,
+          url: `del-users/${data}`,
         };
       },
       invalidatesTags: ["userList"],

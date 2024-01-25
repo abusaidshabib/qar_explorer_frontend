@@ -12,7 +12,7 @@ const hajjApi = createApi({
     },
   }),
   reducerPath: "hajjApi",
-  tagTypes: ['tentList', 'cameraList', 'userList', 'finetuningList'],
+  tagTypes: ['tentList', 'cameraList', 'userList', 'finetuningList', 'ragdataList'],
   endpoints: (builder) => ({}),
 });
 

@@ -8,29 +8,36 @@ import {
     TableRow,
   } from "@nextui-org/react";
 
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useDeleteUserMutation } from "../../../redux/apis/userApi";
 import { useState } from "react";
 import ImportantModal from "../ImportantModal";
+// import { useGetRagDataQuery } from "../../../redux/apis/ragDataApi";
+import { useDeleteRagDataMutation, useGetRagDataQuery } from "../../../redux/apis/ragDataApi";
+import { setSelectedRagData } from "../../../redux/slices/RagData";
 
 const RAGdata = () => {
-
-    const { userAll, finetuning } = useSelector((state) => state.user);
     const { words, lang } = useSelector((state) => state.language);
-    const [deleteUser, {data,isLoading, error, isError}] = useDeleteUserMutation();
+    const { data: ragAllData, isLoading: isFineLoading, refetch  } = useGetRagDataQuery(undefined, {
+      pollingInterval: 60000,
+    });
+    const [deleteRagData, {data,isLoading, error, isError}] = useDeleteRagDataMutation();
     const handleSubmit = (email) => {
-      deleteUser(email);
+      deleteRagData(email);
+      console.log(email)
     }
+
+    const dispatch = useDispatch();
 
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
     const [modelValue, setModelValue] = useState(null);
-    const handleEditModalOpen = (user) => {
+    const handleEditModalOpen = (user, value) => {
       setSelectedUser(user);
       setIsEditModalOpen(true);
       setModelValue(user)
+      dispatch(setSelectedRagData(value))
     };
-
     const handleEditModalClose = () => {
       setSelectedUser(null);
       setIsEditModalOpen(false);
@@ -97,10 +104,10 @@ const RAGdata = () => {
         <TableHeader>
           <TableColumn className="text-right">{words["serial"][lang]}</TableColumn>
           <TableColumn className="text-right">
-            {words["question"][lang]}
+            {words["title"][lang]}
           </TableColumn>
           <TableColumn className="text-right">
-            {words["answer"][lang]}
+            {words["description"][lang]}
           </TableColumn>
           <TableColumn className="text-right">
             {words["review"][lang]}
@@ -108,19 +115,19 @@ const RAGdata = () => {
           <TableColumn className="text-right">Action</TableColumn>
         </TableHeader>
         <TableBody>
-          {(userAll?.length > 0) && userAll?.map((user) => (
-            <TableRow key={user.email}>
-              <TableCell>{user.id}</TableCell>
-              <TableCell>{user.email}</TableCell>
-              <TableCell>{user.username}</TableCell>
-              <TableCell>{user.username}</TableCell>
+          {(ragAllData?.length > 0) && ragAllData?.map((user, index) => (
+            <TableRow key={index}>
+              <TableCell>{index}</TableCell>
+              <TableCell>{user?.title}</TableCell>
+              <TableCell>{user?.description}</TableCell>
+              <TableCell>{user?.review}</TableCell>
               <TableCell>
-                <Button color="danger" size="sm" radius="sm" onClick={() => handleSubmit(user.email)}>
+                <Button color="danger" size="sm" radius="sm" onClick={() => handleSubmit(user?.id)}>
                   Delete
                 </Button>
                 {" "}
                 <Button color="warning" size="sm" radius="sm"
-                onClick={() => handleEditModalOpen(modalData[2])}
+                onClick={() => handleEditModalOpen(modalData[2], user)}
                 >
                   Edit
                 </Button>
@@ -135,6 +142,7 @@ const RAGdata = () => {
         onClose={handleEditModalClose}
         user={selectedUser}
         modelValue={modelValue}
+        refetch={refetch}
       />
     )}
     </div>

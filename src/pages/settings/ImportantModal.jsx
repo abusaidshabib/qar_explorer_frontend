@@ -1,21 +1,45 @@
 /* eslint-disable react/prop-types */
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input } from "@nextui-org/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 
-const ImportantModal = ({ isOpen, onClose, modelValue }) => {
-    const createdByEmail = "admin@gmail.com";
+const ImportantModal = ({ isOpen, onClose, modelValue, refetch }) => {
+  const {user} = useSelector((state) => state.auth);
+  const {selectedFineTuneData} = useSelector((state) => state.finetuning)
+  const { selectedRagData } = useSelector((state) => state.ragdata)
+
+
+
+    const createdByEmail = user?.email;
     const [ragValue, setragValue] = useState({
-        title: '',
-        description: '',
-        review: '',
-        created_by_email: createdByEmail
-      });
+      title: '',
+      description: '',
+      review: '',
+      created_by_email: createdByEmail
+    });
+
+    useEffect(()=> {
+      if(selectedRagData){
+        setragValue(selectedRagData)
+      }
+    },[selectedRagData])
+
+    console.log(ragValue)
+
     const [fineValue, setFineValue] = useState({
         question: '',
         answer: '',
         review: '',
         created_by_email: createdByEmail
       });
+
+      // console.log(selectedFineTuneData)
+
+      useEffect(()=> {
+        if(selectedFineTuneData){
+          setFineValue(selectedFineTuneData)
+        }
+      },[selectedFineTuneData])
 
     const handleInputChange1 = (type, value) => {
         setragValue((prevValue) => ({
@@ -62,12 +86,28 @@ const ImportantModal = ({ isOpen, onClose, modelValue }) => {
                   }
                 formData = JSON.stringify(ragValue)
                 break;
+
+            case "RagUpdateData":
+                  headersValue = {
+                      'Content-Type': 'application/json',
+                    }
+                  formData = JSON.stringify(ragValue)
+                  modelValue.url = modelValue?.url + ragValue?.id + "/"
+                  break;
                 
             case "FineNewData":
                 headersValue = {
                     'Content-Type': 'application/json',
                   }
                 formData = JSON.stringify(fineValue)
+                break;
+
+            case "FineUpdateData":
+                headersValue = {
+                    'Content-Type': 'application/json',
+                  }
+                formData = JSON.stringify(fineValue)
+                modelValue.url = modelValue?.url + fineValue?.id + "/"
                 break;
 
         }
@@ -82,6 +122,7 @@ const ImportantModal = ({ isOpen, onClose, modelValue }) => {
       
           if (response.ok) {
             console.log('successfully');
+            refetch()
           } else {
             console.error('Failed to upload');
           }
@@ -97,7 +138,7 @@ const ImportantModal = ({ isOpen, onClose, modelValue }) => {
           <ModalBody>
           <div className="grid gap-4">
           <>
-      {modelValue?.type === "RagNewData" && (
+      {(modelValue?.type === "RagNewData" || modelValue?.type === "RagUpdateData") && (
         <>
           <Input
             type="title"
@@ -119,7 +160,7 @@ const ImportantModal = ({ isOpen, onClose, modelValue }) => {
           />
         </>
       )}
-      {modelValue?.type === "FineNewData" && (
+      {(modelValue?.type === "FineNewData" || modelValue?.type === "FineUpdateData") && (
         <>
           <Input
             type="question"

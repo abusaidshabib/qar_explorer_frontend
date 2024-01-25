@@ -8,29 +8,34 @@ import {
     TableRow,
   } from "@nextui-org/react";
 
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useDeleteUserMutation } from "../../../redux/apis/userApi";
 import { useState } from "react";
 import ImportantModal from "../ImportantModal";
-import { useGetFineTuneQuery } from "../../../redux/apis/FineTuningApi";
+import { useDeleteFineTuneMutation, useGetFineTuneQuery } from "../../../redux/apis/FineTuningApi";
+import { setSelectedFineTuneData } from "../../../redux/slices/fineTuning";
 
 const FineTuningList = () => {
-  const { data: fineData, isLoading: isFineLoading } = useGetFineTuneQuery(undefined, {
+  const { data: fineData, isLoading: isFineLoading, refetch } = useGetFineTuneQuery(undefined, {
     pollingInterval: 60000,
   });
     const { words, lang } = useSelector((state) => state.language);
-    const [deleteUser, {data,isLoading, error, isError}] = useDeleteUserMutation();
+    const [deleteFineTune, {data,isLoading, error, isError}] = useDeleteFineTuneMutation();
     const handleSubmit = (email) => {
-      deleteUser(email);
+      deleteFineTune(email);
     }
 
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
     const [modelValue, setModelValue] = useState(null);
-    const handleEditModalOpen = (user) => {
-      setSelectedUser(user);
+    const dispatch = useDispatch();
+
+
+    const handleEditModalOpen = (modal, value) => {
+      setSelectedUser(modal);
       setIsEditModalOpen(true);
-      setModelValue(user)
+      setModelValue(modal)
+      dispatch(setSelectedFineTuneData(value))
     };
 
     const handleEditModalClose = () => {
@@ -110,19 +115,19 @@ const FineTuningList = () => {
             <TableColumn className="text-right">Action</TableColumn>
           </TableHeader>
           <TableBody>
-            {(fineData?.length > 0) && fineData?.map((user) => (
-              <TableRow key={user.email}>
-                <TableCell>{user.id}</TableCell>
-                <TableCell>{user.email}</TableCell>
-                <TableCell>{user.username}</TableCell>
-                <TableCell>{user.username}</TableCell>
+            {(fineData?.length > 0) && fineData?.map((value,index) => (
+              <TableRow key={index}>
+                <TableCell>{index}</TableCell>
+                <TableCell>{value.question}</TableCell>
+                <TableCell>{value.answer}</TableCell>
+                <TableCell>{value.review}</TableCell>
                 <TableCell>
-                  <Button color="danger" size="sm" radius="sm" onClick={() => handleSubmit(user.email)}>
+                  <Button color="danger" size="sm" radius="sm" onClick={() => handleSubmit(value.id)}>
                     Delete
                   </Button>
                   {" "}
                   <Button color="warning" size="sm" radius="sm"
-                  onClick={() => handleEditModalOpen(user)}
+                  onClick={() => handleEditModalOpen(modalData[2], value)}
                   >
                     Edit
                   </Button>
@@ -137,6 +142,7 @@ const FineTuningList = () => {
           onClose={handleEditModalClose}
           user={selectedUser}
           modelValue={modelValue}
+          refetch={refetch}
         />
       )}
       </div>

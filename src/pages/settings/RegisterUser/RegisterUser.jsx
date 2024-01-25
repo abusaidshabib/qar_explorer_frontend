@@ -32,7 +32,7 @@ const RegisterUser = () => {
     useRegisterUserMutation();
   console.log(error);
   const handleRegisterUser = () => {
-    const userData = { email, username, password, role, assignedTent };
+    const userData = { email, username, password, role };
     registerUser({
       email,
       username,
@@ -42,7 +42,6 @@ const RegisterUser = () => {
       is_active: role.indexOf("active") !== -1 ? true : false,
       is_staff: role.indexOf("staff") !== -1 ? true : false,
       is_superuser: role.indexOf("superuser") !== -1 ? true : false,
-      assigned_tent: assignedTent,
     });
   };
 
@@ -64,7 +63,6 @@ const RegisterUser = () => {
     setPassword("");
     setConfirmPassword("");
     setRole([]);
-    setAssignedTent([]);
   };
 
   return (
@@ -179,30 +177,11 @@ const RegisterUser = () => {
             Is Admin
           </Checkbox>
           <Checkbox classNames={{ label: "text-text mr-2" }} value="staff">
-            Is Staff
+            Is Editor
           </Checkbox>
           <Checkbox classNames={{ label: "text-text mr-2" }} value="superuser">
             Is Superuser
           </Checkbox>
-        </CheckboxGroup>
-
-        <CheckboxGroup
-          className="col-span-2 mt-3"
-          label={words["Assigned tent"][lang]}
-          orientation="horizontal"
-          value={assignedTent}
-          onChange={setAssignedTent}
-          classNames={{
-            label: "text-right mr-2",
-            wrapper: "gap-5",
-          }}
-        >
-          {tentList &&
-            tentList?.map((tent, i) => (
-              <CustomCheckbox key={i} value={tent.id}>
-                {`${tent.name}`}
-              </CustomCheckbox>
-            ))}
         </CheckboxGroup>
 
         {/* <div className="flex flex-col gap-3 col-span-2 mt-3">

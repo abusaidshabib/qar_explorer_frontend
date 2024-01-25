@@ -8,6 +8,7 @@ import cameraSlice from "../slices/camer";
 import userSlice from "../slices/user";
 import mqttSlice from "../slices/mqtt";
 import fineTuningSlice from "../slices/fineTuning";
+import ragDataSlice from "../slices/RagData";
 
 const store = configureStore({
   reducer: {
@@ -20,6 +21,7 @@ const store = configureStore({
     [userSlice.name]: userSlice.reducer,
     [mqttSlice.name]: mqttSlice.reducer,
     [fineTuningSlice.name]: fineTuningSlice.reducer,
+    [ragDataSlice.name]: ragDataSlice.reducer
   },
   middleware: (getDefaultMiddlewares) => {
     return getDefaultMiddlewares().concat(hajjApi.middleware);
