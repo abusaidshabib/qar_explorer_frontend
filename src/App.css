@@ -1,0 +1,23 @@
+@font-face {
+  font-family: 'Somar Sans';
+  src: url('../src/assets/fonts/SomarSans-Regular.ttf');
+}
+
+html,
+body,
+#root,
+.app {
+  height: 100%;
+  width: 100%;
+  font-family: 'Somar Sans', sans-serif;
+}
+
+/* .leaflet-layer,
+.leaflet-control-zoom-in,
+.leaflet-control-zoom-out,
+.leaflet-control-attribution {
+  filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
+} */
+
+/* Noto Sans Arabic For Arabic Font */
+/* Development time use Agbalumo Font */
