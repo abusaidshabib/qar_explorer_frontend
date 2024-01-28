@@ -10,7 +10,7 @@ import {
 
 import { useDispatch, useSelector } from "react-redux";
 import { useDeleteUserMutation } from "../../../redux/apis/userApi";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ImportantModal from "../ImportantModal";
 import { useDeleteFineTuneMutation, useGetFineTuneQuery } from "../../../redux/apis/FineTuningApi";
 import { setSelectedFineTuneData } from "../../../redux/slices/fineTuning";
@@ -19,6 +19,17 @@ const FineTuningList = () => {
   const { data: fineData, isLoading: isFineLoading, refetch } = useGetFineTuneQuery(undefined, {
     pollingInterval: 60000,
   });
+  const [valueFine, setValueFine] = useState(undefined);
+  useEffect(()=>{
+    if(fineData){
+      setValueFine(fineData.slice().map((data) => {
+        return {
+          ...data,
+          toggle: false
+        }
+      }))
+    }
+  },[fineData])
     const { words, lang } = useSelector((state) => state.language);
     const [deleteFineTune, {data,isLoading, error, isError}] = useDeleteFineTuneMutation();
     const handleSubmit = (email) => {
@@ -41,6 +52,28 @@ const FineTuningList = () => {
     const handleEditModalClose = () => {
       setSelectedUser(null);
       setIsEditModalOpen(false);
+    };
+
+    const handleInputChange2 = (value) => {
+      
+      setValueFine((prev)=> {
+        const subarray = prev.map((data) => {
+          if(value.id==data.id){
+            return {
+              ...data,
+              toggle: true
+            }
+            
+          }
+          else{
+            return {
+              ...data,
+              toggle: false
+            }
+          }
+        })
+        return subarray
+      })
     };
 
     const handleDownload = () => {
@@ -115,19 +148,21 @@ const FineTuningList = () => {
             <TableColumn className="text-right">Action</TableColumn>
           </TableHeader>
           <TableBody>
-            {(fineData?.length > 0) && fineData?.map((value,index) => (
-              <TableRow key={index}>
-                <TableCell>{index}</TableCell>
-                <TableCell>{value.question}</TableCell>
-                <TableCell>{value.answer}</TableCell>
-                <TableCell>{value.review}</TableCell>
-                <TableCell>
-                  <Button color="danger" size="sm" radius="sm" onClick={() => handleSubmit(value.id)}>
-                    Delete
-                  </Button>
+          {(valueFine?.length > 0) && valueFine?.map((user, index) => (
+            <TableRow className={`${user?.toggle && "bg-zinc-200 rounded-xl"}`} key={index} onClick={()=>handleInputChange2(user)} >
+              <TableCell className="text-balance">{index + 1}</TableCell>
+              <TableCell className="text-balance">{user?.toggle? user?.question:user?.question.slice(0,10)}</TableCell>
+              <TableCell className="text-balance">{user?.toggle? user?.answer:user?.answer.slice(0,10)}</TableCell>
+              <TableCell>
+                <p className="text-balance">{user?.review}</p>
+              </TableCell>
+              <TableCell className="flex gap-5 justify-end items-center">
+                <Button color="danger" size="sm" radius="sm" onClick={() => handleSubmit(user?.id)}>
+                  Delete
+                </Button>
                   {" "}
                   <Button color="warning" size="sm" radius="sm"
-                  onClick={() => handleEditModalOpen(modalData[2], value)}
+                  onClick={() => handleEditModalOpen(modalData[2], user)}
                   >
                     Edit
                   </Button>

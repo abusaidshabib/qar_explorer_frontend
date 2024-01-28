@@ -27,7 +27,7 @@ const Side = ({ side, setSide }) => {
   const navigation = useNavigate();
   return (
     <div
-      className={`${mode} bg-bgalt sticky flex-col items-center gap-[100px]  min-h-screen top-0  border-[rgba(0,0,0,0.2)] hidden sm:flex`}
+      className={`${mode} bg-bgalt sticky flex-col items-center gap-[100px]  min-h-screen w-64 top-0  border-[rgba(0,0,0,0.2)] hidden sm:flex`}
     >
       <div className="w-full flex flex-row justify-start pr-2 pt-2">
         {

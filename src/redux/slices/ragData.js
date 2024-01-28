@@ -10,7 +10,12 @@ const ragDataSlice = createSlice({
     initialState,
     reducers: {
         setRagData:(state, action) => {
-            state.allRagData = action.payload;
+            state.allRagData = action.payload.slice().map((data)=>{
+                return {
+                    ...data,
+                    toggle: false
+                }
+            });
         },
         setSelectedRagData: (state, action) => {
             state.selectedRagData = action.payload

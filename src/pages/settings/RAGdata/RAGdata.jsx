@@ -10,7 +10,7 @@ import {
 
 import { useDispatch, useSelector } from "react-redux";
 import { useDeleteUserMutation } from "../../../redux/apis/userApi";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ImportantModal from "../ImportantModal";
 // import { useGetRagDataQuery } from "../../../redux/apis/ragDataApi";
 import { useDeleteRagDataMutation, useGetRagDataQuery } from "../../../redux/apis/ragDataApi";
@@ -21,6 +21,21 @@ const RAGdata = () => {
     const { data: ragAllData, isLoading: isFineLoading, refetch  } = useGetRagDataQuery(undefined, {
       pollingInterval: 60000,
     });
+    const [valueRag, setValueRag] = useState(undefined);
+
+    useEffect(()=>{
+      if(ragAllData){
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        setValueRag(ragAllData.slice().map((data)=> {
+          return {
+            ...data,
+            toggle: false
+          }
+        }))
+      }
+    }, [ragAllData])
+
+    console.log(valueRag)
     const [deleteRagData, {data,isLoading, error, isError}] = useDeleteRagDataMutation();
     const handleSubmit = (email) => {
       deleteRagData(email);
@@ -29,6 +44,7 @@ const RAGdata = () => {
 
     const dispatch = useDispatch();
 
+    // const [ragValue, setragValue] = useState(undefined);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
     const [modelValue, setModelValue] = useState(null);
@@ -41,6 +57,29 @@ const RAGdata = () => {
     const handleEditModalClose = () => {
       setSelectedUser(null);
       setIsEditModalOpen(false);
+    };
+    
+
+    const handleInputChange1 = (value) => {
+      
+      setValueRag((prev)=> {
+        const subarray = prev.map((data) => {
+          if(value.id==data.id){
+            return {
+              ...data,
+              toggle: true
+            }
+            
+          }
+          else{
+            return {
+              ...data,
+              toggle: false
+            }
+          }
+        })
+        return subarray
+      })
     };
 
     const handleDownload = () => {
@@ -88,20 +127,20 @@ const RAGdata = () => {
     ]
 
     return (
-        <div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 place-content-center gap-5 p-5">
-            <Button color="warning" onClick={handleDownloadCSV}>Download All Data</Button>
-            <Button color="primary" variant="ghost" onClick={() => handleEditModalOpen(modalData[0])}>Upload CSV</Button> 
-            <Button color="primary" variant="solid" onClick={handleDownload}>CSV Template Download</Button>
-            <Button color="secondary" variant="ghost" onClick={() => handleEditModalOpen(modalData[1])}>Add New Data</Button>
+      <div>
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 place-items-center gap-5 p-5">
+            <Button className="w-56" color="warning" onClick={handleDownloadCSV}>Download All Data</Button>
+            <Button className="w-56" color="primary" variant="ghost" onClick={() => handleEditModalOpen(modalData[0])}>Upload CSV</Button> 
+            <Button className="w-56" color="primary" variant="solid" onClick={handleDownload}>CSV Template Download</Button>
+            <Button className="w-56" color="secondary" variant="ghost" onClick={() => handleEditModalOpen(modalData[1])}>Add New Data</Button>
         </div>
       <Table
         removeWrapper
         aria-label="Tent list"
         dir="ltr"
-        className="text-right"
+        className="text-right max-w-[calc(100vw-400px)]"
       >
-        <TableHeader>
+        <TableHeader className="">
           <TableColumn className="text-right">{words["serial"][lang]}</TableColumn>
           <TableColumn className="text-right">
             {words["title"][lang]}
@@ -115,13 +154,15 @@ const RAGdata = () => {
           <TableColumn className="text-right">Action</TableColumn>
         </TableHeader>
         <TableBody>
-          {(ragAllData?.length > 0) && ragAllData?.map((user, index) => (
-            <TableRow key={index}>
-              <TableCell>{index}</TableCell>
-              <TableCell>{user?.title}</TableCell>
-              <TableCell>{user?.description}</TableCell>
-              <TableCell>{user?.review}</TableCell>
+          {(valueRag?.length > 0) && valueRag?.map((user, index) => (
+            <TableRow className={`${user?.toggle && "bg-zinc-200 rounded-xl"}`} key={index} onClick={()=>handleInputChange1(user)} >
+              <TableCell className="text-balance">{index + 1}</TableCell>
+              <TableCell className="text-balance">{user?.toggle? user?.title:user?.title.slice(0,20)}</TableCell>
+              <TableCell className="text-balance">{user?.toggle? user?.description:user?.description.slice(0,20)}</TableCell>
               <TableCell>
+                <p className="text-balance">{user?.review}</p>
+              </TableCell>
+              <TableCell className="flex gap-5 justify-end">
                 <Button color="danger" size="sm" radius="sm" onClick={() => handleSubmit(user?.id)}>
                   Delete
                 </Button>

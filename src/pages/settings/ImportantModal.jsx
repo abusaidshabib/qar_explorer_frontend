@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input } from "@nextui-org/react";
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input, Select, SelectItem } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
@@ -14,7 +14,7 @@ const ImportantModal = ({ isOpen, onClose, modelValue, refetch }) => {
     const [ragValue, setragValue] = useState({
       title: '',
       description: '',
-      review: '',
+      review: 'Accept',
       created_by_email: createdByEmail
     });
 
@@ -23,17 +23,16 @@ const ImportantModal = ({ isOpen, onClose, modelValue, refetch }) => {
         setragValue(selectedRagData)
       }
     },[selectedRagData])
-
-    console.log(ragValue)
+    
 
     const [fineValue, setFineValue] = useState({
         question: '',
         answer: '',
-        review: '',
+        review: 'Accept',
         created_by_email: createdByEmail
       });
 
-      // console.log(selectedFineTuneData)
+      
 
       useEffect(()=> {
         if(selectedFineTuneData){
@@ -42,16 +41,21 @@ const ImportantModal = ({ isOpen, onClose, modelValue, refetch }) => {
       },[selectedFineTuneData])
 
     const handleInputChange1 = (type, value) => {
+      console.log(type, value)
+      if (value !== undefined) {
         setragValue((prevValue) => ({
           ...prevValue,
           [type]: value,
         }));
+      }
     };
     const handleInputChange2 = (type, value) => {
+      if (value !== undefined) {
         setFineValue((prevValue) => ({
           ...prevValue,
           [type]: value,
         }));
+      }
     };
 
     let formData;
@@ -131,6 +135,8 @@ const ImportantModal = ({ isOpen, onClose, modelValue, refetch }) => {
         }
       };
 
+      const reviewOptions = ["Accept", "Reject"]
+
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
         <ModalContent>
@@ -152,12 +158,17 @@ const ImportantModal = ({ isOpen, onClose, modelValue, refetch }) => {
             value={ragValue.description}
             onChange={(e) => handleInputChange1('description', e.target.value)}
           />
-          <Input
-            type="review"
-            label="Review"
-            value={ragValue.review}
-            onChange={(e) => handleInputChange1('review', e.target.value)}
-          />
+          <Select 
+        label="Review" 
+        defaultSelectedKeys={["Accept"]}
+        onChange={(e) => handleInputChange1('review', e.target.value)}
+      >
+        {reviewOptions.map((animal) => (
+          <SelectItem key={animal} value={animal}>
+            {animal}
+          </SelectItem>
+        ))}
+      </Select>
         </>
       )}
       {(modelValue?.type === "FineNewData" || modelValue?.type === "FineUpdateData") && (
@@ -174,12 +185,17 @@ const ImportantModal = ({ isOpen, onClose, modelValue, refetch }) => {
             value={fineValue.answer}
             onChange={(e) => handleInputChange2('answer', e.target.value)}
           />
-          <Input
-            type="review"
-            label="Review"
-            value={fineValue.review}
-            onChange={(e) => handleInputChange2('review', e.target.value)}
-          />
+      <Select 
+        label="Review" 
+        defaultSelectedKeys={["Accept"]}
+        onChange={(e) => handleInputChange2('review', e.target.value)}
+      >
+        {reviewOptions.map((animal) => (
+          <SelectItem key={animal} value={animal}>
+            {animal}
+          </SelectItem>
+        ))}
+      </Select>
         </>
       )}
     </>
