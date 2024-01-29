@@ -6,17 +6,20 @@ import {
     TableColumn,
     TableHeader,
     TableRow,
+    Pagination
   } from "@nextui-org/react";
 
 import { useDispatch, useSelector } from "react-redux";
-import { useDeleteUserMutation } from "../../../redux/apis/userApi";
 import { useEffect, useState } from "react";
 import ImportantModal from "../ImportantModal";
 // import { useGetRagDataQuery } from "../../../redux/apis/ragDataApi";
 import { useDeleteRagDataMutation, useGetRagDataQuery } from "../../../redux/apis/ragDataApi";
 import { setSelectedRagData } from "../../../redux/slices/RagData";
+import { RiEditLine } from "react-icons/ri";
+import { MdOutlineDelete } from "react-icons/md";
 
 const RAGdata = () => {
+  const [page, setPage] = useState(1);
     const { words, lang } = useSelector((state) => state.language);
     const { data: ragAllData, isLoading: isFineLoading, refetch  } = useGetRagDataQuery(undefined, {
       pollingInterval: 60000,
@@ -24,18 +27,17 @@ const RAGdata = () => {
     const [valueRag, setValueRag] = useState(undefined);
 
     useEffect(()=>{
-      if(ragAllData){
+      if(ragAllData?.results){
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        setValueRag(ragAllData.slice().map((data)=> {
+        setValueRag(ragAllData?.results?.slice().map((data)=> {
           return {
             ...data,
             toggle: false
           }
         }))
       }
-    }, [ragAllData])
+    }, [ragAllData?.results])
 
-    console.log(valueRag)
     const [deleteRagData, {data,isLoading, error, isError}] = useDeleteRagDataMutation();
     const handleSubmit = (email) => {
       deleteRagData(email);
@@ -126,6 +128,14 @@ const RAGdata = () => {
         }
     ]
 
+
+  
+    // const loadingState = isLoading || valueRag?.results.length === 0 ? "loading" : "idle";
+
+    // const pages = 
+
+    let pages = Math.ceil(valueRag?.length / 10);
+
     return (
       <div>
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 place-items-center gap-5 p-5">
@@ -139,6 +149,21 @@ const RAGdata = () => {
         aria-label="Tent list"
         dir="ltr"
         className="text-right max-w-[calc(100vw-400px)]"
+        bottomContent={
+          page > 0 ? (
+            <div className="flex w-full justify-center">
+             <Pagination
+          isCompact
+          showControls
+          showShadow
+          color="primary"
+          page={page}
+          total={pages}
+          onChange={setPage}
+        />
+            </div>
+          ) : null
+        }
       >
         <TableHeader className="">
           <TableColumn className="text-right">{words["serial"][lang]}</TableColumn>
@@ -156,20 +181,22 @@ const RAGdata = () => {
         <TableBody>
           {(valueRag?.length > 0) && valueRag?.map((user, index) => (
             <TableRow className={`${user?.toggle && "bg-zinc-200 rounded-xl"}`} key={index} onClick={()=>handleInputChange1(user)} >
-              <TableCell className="text-balance">{index + 1}</TableCell>
-              <TableCell className="text-balance">{user?.toggle? user?.title:user?.title.slice(0,20)}</TableCell>
-              <TableCell className="text-balance">{user?.toggle? user?.description:user?.description.slice(0,20)}</TableCell>
-              <TableCell>
+              <TableCell className="text-balance pl-5">{index + 1}</TableCell>
+              <TableCell className="text-balance w-1/4 px-5">{user?.toggle? user?.title:user?.title.slice(0,20)}</TableCell>
+              <TableCell className="text-balance w-1/4 pr-5">{user?.toggle? user?.description:user?.description.slice(0,20)}</TableCell>
+              <TableCell className="pr-5">
                 <p className="text-balance">{user?.review}</p>
               </TableCell>
               <TableCell className="flex gap-5 justify-end">
                 <Button color="danger" size="sm" radius="sm" onClick={() => handleSubmit(user?.id)}>
+                <MdOutlineDelete className="text-lg" />
                   Delete
                 </Button>
                 {" "}
                 <Button color="warning" size="sm" radius="sm"
                 onClick={() => handleEditModalOpen(modalData[2], user)}
                 >
+                  <RiEditLine className="text-lg" />
                   Edit
                 </Button>
               </TableCell>

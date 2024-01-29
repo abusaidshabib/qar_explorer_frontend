@@ -4,8 +4,8 @@ import hajjApi from "./hajjApi";
 const fineTuningApi = hajjApi.injectEndpoints({
     endpoints: (builder) => ({
         getFineTune: builder.query({
-            query: () => {
-                return "fine-tuning-qas/";
+            query: (data) => {
+                return `fine-tuning-qas/?page=${data}`;
             },
             providesTags: ['finetuningList'],
             async onQueryStarted(args,{dispatch, queryFulfilled}){
