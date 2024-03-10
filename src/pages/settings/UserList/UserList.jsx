@@ -37,7 +37,7 @@ const UserList = () => {
           <TableColumn className="text-right">{words["id"][lang]}</TableColumn>
         </TableHeader>
         <TableBody>
-          {(userAll?.length > 0) && userAll?.map((user) => (
+          {(userAll?.results?.length > 0) && userAll?.results?.map((user) => (
             <TableRow key={user.email}>
               <TableCell>
                 <Button color="danger" size="sm" radius="sm" onClick={() => handleSubmit(user.email)}>
