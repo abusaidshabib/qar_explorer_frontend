@@ -182,8 +182,10 @@ const RAGdata = () => {
           {(valueRag?.length > 0) && valueRag?.map((user, index) => (
             <TableRow className={`${user?.toggle && "bg-zinc-200 rounded-xl"}`} key={index} onClick={()=>handleInputChange1(user)} >
               <TableCell className="text-balance pl-5">{index + 1}</TableCell>
-              <TableCell className="text-balance w-1/4 px-5">{user?.toggle? user?.title:user?.title.slice(0,20)}</TableCell>
-              <TableCell className="text-balance w-1/4 pr-5">{user?.toggle? user?.description:user?.description.slice(0,20)}</TableCell>
+              {/* <TableCell className="text-balance w-1/4 px-5">{user?.toggle? user?.title:user?.title.slice(0,20)}</TableCell> */}
+              {/* <TableCell className="text-balance w-1/4 pr-5">{user?.toggle? user?.description:user?.description.slice(0,20)}</TableCell> */}
+              <TableCell className="text-balance w-1/4 px-5">{user?.title}</TableCell>
+              <TableCell className="text-balance w-1/4 pr-5">{user?.description}</TableCell>
               <TableCell className="pr-5">
                 <p className="text-balance">{user?.review}</p>
               </TableCell>

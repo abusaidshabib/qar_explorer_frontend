@@ -173,8 +173,10 @@ const FineTuningList = () => {
           {(valueFine?.length > 0) && valueFine?.map((user, index) => (
             <TableRow className={`${user?.toggle && "bg-zinc-200 rounded-xl"}`} key={index} onClick={()=>handleInputChange2(user)} >
               <TableCell className="text-balance pl-5">{user?.id}</TableCell>
-              <TableCell className="text-balance  w-1/4 px-5">{user?.toggle? user?.question:user?.question.slice(0,20)}</TableCell>
-              <TableCell className="text-balance  w-1/4 pr-5">{user?.toggle? user?.answer:user?.answer.slice(0,20)}</TableCell>
+              {/* <TableCell className="text-balance  w-1/4 px-5">{user?.toggle? user?.question:user?.question.slice(0,20)}</TableCell> */}
+              <TableCell className="text-balance  w-1/4 px-5">{user?.question}</TableCell>
+              <TableCell className="text-balance  w-1/4 pr-5">{user?.answer}</TableCell>
+              {/* <TableCell className="text-balance  w-1/4 pr-5">{user?.toggle? user?.answer:user?.answer.slice(0,20)}</TableCell> */}
               <TableCell className="pr-5">
                 <p className="text-balance">{user?.review ? user?.review:"No Review here"}</p>
               </TableCell>
